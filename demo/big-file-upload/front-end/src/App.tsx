@@ -1,35 +1,51 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
-
-function App() {
-  const [count, setCount] = useState(0)
-
+import { Button, Progress } from 'antd'
+import {
+  selectFileFromLocal,
+  sliceFileAndCalculateHash,
+  uploadChunks
+} from './lib/file'
+import { useImmer } from 'use-immer'
+export default function App() {
+  const onUploadFile = async () => {
+    const file = await selectFileFromLocal()
+    if (!file) return
+    const { chunkList, hash } = await sliceFileAndCalculateHash(file)
+    uploadChunks(chunkList, hash, file, createProgress, addProgressValue)
+  }
+  const createProgress = (hash: string, initLoaded: number, total: number) => {
+    setProgress(progress => {
+      progress[hash] = { loaded: initLoaded, total }
+    })
+  }
+  const addProgressValue = (hash: string, bytes: number) => {
+    setProgress(progress => {
+      progress[hash].loaded += bytes
+    })
+  }
+  const [progress, setProgress] = useImmer<
+    Record<
+      string,
+      {
+        loaded: number
+        total: number
+      }
+    >
+  >({})
   return (
-    <>
+    <div>
+      <Button onClick={onUploadFile}>上传</Button>
       <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+        {Object.keys(progress).map(hash => {
+          const { loaded, total } = progress[hash]
+          const percent = Number((loaded / total).toFixed(2)) * 100
+          return (
+            <>
+              <span>{hash}</span>
+              <Progress percent={percent} />
+            </>
+          )
+        })}
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+    </div>
   )
 }
-
-export default App
