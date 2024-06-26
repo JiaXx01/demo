@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style>
+      * {
+        padding: 0;
+        margin: 0;
+      }
+      #container {
+        height: 100vh;
+        width: 100vw;
+      }
+    </style>
+    <title>throttle</title>
+  </head>
+  <body>
+    <div id="container"></div>
+    <script type="module">
+      import {
+        throttle_timestamp,
+        throttle_timer,
+        throttle_timer_2,
+        throttle_start_and_end,
+        throttle_start_or_end
+      } from './throttle.js'
+      let count = 1
+      const dom = document.getElementById('container')
+      const addCount = function (event) {
+        console.log(this)
+        console.log(event)
+        dom.innerText = count++
+      }
+      // dom.addEventListener('mousemove', addCount)
+      // dom.addEventListener('mousemove', throttle_timestamp(addCount, 2000))
+      // dom.addEventListener('mousemove', throttle_timer(addCount, 2000))
+      // dom.addEventListener('mousemove', throttle_timer_2(addCount, 2000))
+      // dom.addEventListener('mousemove', throttle_start_and_end(addCount, 2000))
+      // dom.addEventListener(
+      //   'mousemove',
+      //   throttle_start_or_end(addCount, 2000, { leading: false })
+      // )
+      dom.addEventListener(
+        'mousemove',
+        throttle_start_or_end(addCount, 2000, { trailing: false })
+      )
+    </script>
+  </body>
+</html>

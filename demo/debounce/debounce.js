@@ -48,3 +48,28 @@ export function debounce_immediate(fn, wait, immediate) {
     }
   }
 }
+
+export function debounce_cancel(fn, wait, immediate) {
+  let timer = null
+  const debounced = function () {
+    const _this = this
+    const args = arguments
+    if (timer) clearTimeout(timer)
+    if (immediate) {
+      const nowCall = !timer
+      timer = setTimeout(function () {
+        timer = null
+      }, wait)
+      if (nowCall) fn.apply(_this, args)
+    } else {
+      timer = setTimeout(function () {
+        fn.apply(_this, args)
+      }, wait)
+    }
+  }
+  debounced.cancel = function () {
+    clearTimeout(timer)
+    timer = null
+  }
+  return debounced
+}
