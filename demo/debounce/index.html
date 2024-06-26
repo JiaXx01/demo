@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style>
+      * {
+        padding: 0;
+        margin: 0;
+      }
+      #container {
+        height: 100vh;
+        width: 100vw;
+      }
+    </style>
+    <title>debounce</title>
+  </head>
+  <body>
+    <div id="container"></div>
+    <script type="module">
+      import {
+        debounce_easy,
+        debounce_this,
+        debounce_args,
+        debounce_immediate
+      } from './debounce.js'
+      let count = 1
+      const dom = document.getElementById('container')
+      const addCount = function (event) {
+        console.log(this)
+        console.log(event)
+        dom.innerText = count++
+      }
+      // dom.addEventListener('mousemove', addCount)
+      // dom.addEventListener('mousemove', debounce_easy(addCount, 500))
+      // dom.addEventListener('mousemove', debounce_this(addCount, 500))
+      // dom.addEventListener('mousemove', debounce_args(addCount, 500))
+      dom.addEventListener('mousemove', debounce_immediate(addCount, 500, true))
+    </script>
+  </body>
+</html>
